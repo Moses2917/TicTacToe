@@ -40,25 +40,22 @@ public class slTTTBoard {
         boolean first = true;
         while(true) {
             if (first) {
-//                printBoard();
-
-//                displayBoard();
                 System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space): ");
+                Scanner sc = new Scanner(System.in);
                 try {
-                    Scanner sc = new Scanner(System.in);
-                    String response = sc.nextLine();
-                    if (response.equalsIgnoreCase("q")){
-                        break;
-                    }
                     int row = sc.nextInt();
                     int col = sc.nextInt();
-                    System.out.println(row + " :row, col: " + col);
+//                    System.out.println(row + " :row, col: " + col);
                     first = false;
                     if (game_board[row][col] == 0){
                         game_board[row][col] = 1;
                     }
 
                 } catch (Exception e) {
+                    String response = sc.next();
+                    if (response.equalsIgnoreCase("q")){
+                        break;
+                    }
                     if (e.toString().equals("java.util.InputMismatchException")) {
                         System.out.println("You have entered an invalid number, Try again.");
                     }
@@ -68,16 +65,11 @@ public class slTTTBoard {
             else{
                 printBoard();
                 System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space): ");
+                Scanner sc = new Scanner(System.in);
                 try {
-                    Scanner sc = new Scanner(System.in);
-                    String response = sc.nextLine();
-                    if (response.equalsIgnoreCase("q")){
-                        break;
-                    }
                     int row = sc.nextInt();
                     int col = sc.nextInt();
-//                    System.out.println(row + " :row, col: " + col);
-                    first = false;
+
                     if (game_board[row][col] == 0){
                         game_board[row][col] = 1;
                     }
@@ -86,37 +78,16 @@ public class slTTTBoard {
                     }
 
                 } catch (Exception e) {
+                    String response = sc.next();
+                    if (response.equalsIgnoreCase("q")){
+                        break;
+                    }
                     if (e.toString().equals("java.util.InputMismatchException")) {
                         System.out.println("You have entered an invalid number, Try again.");
                     }
                 }
             }
-
-
-//            String row, col = response.split(" ");
         }
-        System.out.println("Thank you for playing Tic Tac Toe game!");
-    }
-
-    private void displayBoard() {
-        int ct = 0;
-        for (int[] ints : game_board) {
-            for (int anInt : ints) {
-                if (ct >= 3){
-                    System.out.println("\n");
-
-                    ct = 0;
-                }
-                if (anInt == 1){
-                    System.out.print("X    ");
-                }
-                else if (anInt == 0){
-                    System.out.print("-    ");
-                }
-
-                ct++;
-            }
-        }
-        System.out.println("");
+//        System.out.println("Thank you for playing Tic Tac Toe game!");
     }
 }
