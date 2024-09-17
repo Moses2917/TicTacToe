@@ -32,34 +32,58 @@ public class slTTTBoard {
                 ct++;
             }
         }
-        System.out.println("");
+        System.out.println();
 
+    }
+
+    private int[][] mark_tic(int[][] game_board, int row, int col){
+        final int GRID_MAX_SIZE = 2;
+        if (row > GRID_MAX_SIZE || col > GRID_MAX_SIZE){
+            System.out.println("Invalid row or col number!");
+        }
+        else{
+            if (game_board[row][col] == 0){
+                game_board[row][col] = 1;
+            }
+            else{
+                System.out.println("Please try again that space is already occupied.");
+            }
+        }
+        return game_board;
     }
 
     public void play(){
         boolean first = true;
         while(true) {
             if (first) {
-                System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space): ");
                 Scanner sc = new Scanner(System.in);
-                try {
-                    int row = sc.nextInt();
-                    int col = sc.nextInt();
-//                    System.out.println(row + " :row, col: " + col);
-                    first = false;
-                    if (game_board[row][col] == 0){
-                        game_board[row][col] = 1;
-                    }
+                System.out.println("Would you like to go first (Y|N): ");
+                if (sc.next().equals("Y")){
+                    System.out.print("Please enter the coords where you would like to place your mark (Separate by a space): ");
 
-                } catch (Exception e) {
-                    String response = sc.next();
-                    if (response.equalsIgnoreCase("q")){
-                        break;
+                    try {
+                        int row = sc.nextInt();
+                        int col = sc.nextInt();
+                        first = false;
+                        mark_tic(game_board, row, col);
+
+                    } catch (Exception e) {
+                        String response = sc.next();
+                        if (response.equalsIgnoreCase("q")){
+                            break;
+                        }
+                        if (e.toString().equals("java.util.InputMismatchException")) {
+                            System.out.println("You have entered an invalid number, Try again.");
+                        }
                     }
-                    if (e.toString().equals("java.util.InputMismatchException")) {
-                        System.out.println("You have entered an invalid number, Try again.");
-                    }
+                } else if (sc.next().equals("N")) {
+                    //Call a function to have machine take first move.
+                    System.out.println();
                 }
+                else{
+                    System.out.println("You have entered an invalid number, Try again.");
+                }
+
 
             }
             else{
@@ -69,13 +93,7 @@ public class slTTTBoard {
                 try {
                     int row = sc.nextInt();
                     int col = sc.nextInt();
-
-                    if (game_board[row][col] == 0){
-                        game_board[row][col] = 1;
-                    }
-                    else {
-                        System.out.println("Please try again that space is already occupied.");
-                    }
+                    mark_tic(game_board, row, col);
 
                 } catch (Exception e) {
                     String response = sc.next();
