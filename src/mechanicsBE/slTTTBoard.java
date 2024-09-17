@@ -25,6 +25,9 @@ public class slTTTBoard {
                 if (anInt == 1){
                     System.out.print("X    ");
                 }
+                if (anInt == 2){
+                    System.out.print("O    ");
+                }
                 else if (anInt == 0){
                     System.out.print("-    ");
                 }
@@ -36,40 +39,72 @@ public class slTTTBoard {
 
     }
 
-    public boolean gameOver(int[][] game_Board) {
+    //TODO: Calculate a draw
+    public int gameOver(int[][] game_board) {
+        // returns a bool based on if the game is over
         final int GRID_MAX_SIZE = 2;
+        final int player_1_wins = 1;
+        final int player_2_wins = 2;
+//        final int
         // checks the rows for a win
         for(int row = 0; row <= GRID_MAX_SIZE; row++){
-            int ticks = 0;
+            int player_1_ticks = 0;
+            int player_2_ticks = 0;
             for(int col = 0; col <= GRID_MAX_SIZE; col++){
-                if (game_Board[row][col] == 1){
-                    ticks++;
+                if (game_board[row][col] == 1){
+                    player_1_ticks++;
+                }
+                if (game_board[row][col] == 2){
+                    player_2_ticks++;
                 }
             }
-            if (ticks == 3) {
-                return true;
+            if (player_1_ticks == 3) {
+                return player_1_wins;
+            }
+            if (player_2_ticks == 3) {
+                return player_2_wins;
             }
         }
         // checks the columns for a win
         for(int col = 0; col <= GRID_MAX_SIZE; col++){
-            int ticks = 0;
+            int player_1_ticks = 0;
+            int player_2_ticks = 0;
             for(int row = 0; row <= GRID_MAX_SIZE; row++){
-                if (game_Board[row][col] == 1){
-                    ticks++;
+                if (game_board[row][col] == 1){
+                    player_1_ticks++;
+                }
+                if (game_board[row][col] == 2){
+                    player_2_ticks++;
                 }
             }
-            if (ticks == 3) {
-                return true;
+            if (player_1_ticks == 3) {
+                return player_1_wins;
+            }
+            if (player_2_ticks == 3) {
+                return player_2_wins;
             }
         }
         // checks the diagonals for a win
         if(game_board[0][0] == 1 && game_board[1][1] == 1 && game_board[2][2] == 1){
-            return true;
+            return player_1_wins;
         }
         if(game_board[0][2] == 1 && game_board[1][1] == 1 && game_board[2][0] == 1){
-            return true;
+            return player_1_wins;
         }
-        return false;
+        if (game_board[0][0] == 2 && game_board[1][1] == 2 && game_board[2][2] == 2){
+            return player_2_wins;
+        }
+        if(game_board[0][2] == 2 && game_board[1][1] == 2 && game_board[2][0] == 2){
+            return player_2_wins;
+        }
+        return 0;
+    }
+
+    private boolean valid_mark(int[][] game_board, int row, int col){
+        if (game_board[row][col] != 0){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -78,14 +113,19 @@ public class slTTTBoard {
      * @param col The column which the player chooses to place a tick in
      * @return The ticktacktoe board after the chosen modifications have been applied to it
      */
-    private int[][] mark_tic(int[][] game_board, int row, int col){
+    private int[][] mark_tic(int[][] game_board, int row, int col, int player){
         final int GRID_MAX_SIZE = 2;
         if (row > GRID_MAX_SIZE || col > GRID_MAX_SIZE){
             System.out.println("Invalid row or col number!");
         }
         else{
             if (game_board[row][col] == 0){
-                game_board[row][col] = 1;
+                if (player == 1){
+                    game_board[row][col] = 1;
+                }
+                if (player == 2){
+                    game_board[row][col] = 2;
+                }
             }
             else{
                 System.out.println("Please try again that space is already occupied.");
@@ -94,22 +134,57 @@ public class slTTTBoard {
         return game_board;
     }
 
+    /**
+     * @param game_bord The current ticktacktoe board
+     */
+    private void minimx_algo(int[][] game_bord){
+    }
 
+    private void machineMove(int[][] game_bord, int player){
+        int row = 0;
+        double randRow = Math.random();
+        if (randRow > .6){
+            row = 2;
+        }
+        else if (randRow > .3){
+            row = 1;
+        }
+        double randCol = Math.random();
+        int col = 0;
+        if (randCol > .6){
+            col = 2;
+        }
+        else if (randCol > .3){
+            col = 1;
+        }
+        if (valid_mark(game_board, row, col)){
+            mark_tic(game_bord, row, col, player);
+        }
+        else{
+            machineMove(game_bord, player);
+        }
+    }
 
     public void play(){
         boolean first = true;
+        // Default user and machine player values
+        int user_player_num = 1;
+        int machine_player_num = 2;
         while(true) {
             if (first) {
                 Scanner sc = new Scanner(System.in);
-                System.out.println("Would you like to go first (Y|N): ");
-                if (sc.next().equalsIgnoreCase("Y")){
-                    System.out.print("Please enter the coords where you would like to place your mark (Separate by a space): ");
-
+                System.out.print("Would you like to go first (Y|N): ");
+                first = false;
+                String user_input = sc.next();
+                if (user_input.equalsIgnoreCase("Y")){
+//                    user_player_num = 1;
+//                    machine_player_num = 2;
+                    System.out.print("Please enter the coords where you would like to place your mark (Separate by a space):\nPlayer Move: ");
                     try {
                         int row = sc.nextInt();
                         int col = sc.nextInt();
-                        first = false;
-                        mark_tic(game_board, row, col);
+
+                        mark_tic(game_board, row, col, user_player_num);
 
                     } catch (Exception e) {
                         String response = sc.next();
@@ -120,28 +195,47 @@ public class slTTTBoard {
                             System.out.println("You have entered an invalid number, Try again.");
                         }
                     }
-                } else if (sc.next().equalsIgnoreCase("N")) {
+                }
+                if (user_input.equalsIgnoreCase("N")) {
                     //Call a function to have machine take first move.
-                    System.out.println();
+                    user_player_num = 2;
+                    machine_player_num = 1;
+                    System.out.println("Machine Move: ");
+                    machineMove(game_board, 1);
+//                    System.out.println(row + " " + col);
                 }
-                else{
-                    System.out.println("You have entered an invalid number, Try again.");
-                }
+//                else{
+//                    System.out.println("You have entered an invalid number, Try again.");
+//                }
 
 
             }
             else{
                 printBoard();
-                System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space): ");
+                System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space):\nPlayer Move: ");
                 Scanner sc = new Scanner(System.in);
                 try {
                     int row = sc.nextInt();
                     int col = sc.nextInt();
-                    mark_tic(game_board, row, col);
-                    if (gameOver(game_board)){
-                        System.out.println("Game over :(");
+                    if (valid_mark(game_board, row, col)){
+                        mark_tic(game_board, row, col, user_player_num);
                     }
 
+                    if (gameOver(game_board) == 1){
+                        System.out.println("Game over :(\nPlayer 1 wins");
+                    }
+                    else if (gameOver(game_board) == 2){
+                        System.out.println("Game over :(\nPlayer 2 wins");
+                    }
+
+                    machineMove(game_board, machine_player_num);
+
+                    if (gameOver(game_board) == 1){
+                        System.out.println("Game over :(\nPlayer 1 wins");
+                    }
+                    else if (gameOver(game_board) == 2){
+                        System.out.println("Game over :(\nPlayer 2 wins");
+                    }
                 } catch (Exception e) {
                     String response = sc.next();
                     if (response.equalsIgnoreCase("q")){
