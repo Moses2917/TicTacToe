@@ -1,5 +1,7 @@
 package mechanicsBE;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class slTTTBoard {
     int[][] game_board;
@@ -15,20 +17,47 @@ public class slTTTBoard {
     public void printBoard() {
 
         int ct = 0;
-        for (int[] ints : game_board) {
-            for (int anInt : ints) {
+        for (int[] ints : game_board) { //switch anint and ints if need be
+            for (int anint : ints) {
                 if (ct >= 3){
                     System.out.println("\n");
 
                     ct = 0;
                 }
-                if (anInt == 1){
+                if (anint == 1){
                     System.out.print("X    ");
                 }
-                if (anInt == 2){
+                if (anint == 2){
                     System.out.print("O    ");
                 }
-                else if (anInt == 0){
+                else if (anint == 0){
+                    System.out.print("-    ");
+                }
+
+                ct++;
+            }
+        }
+        System.out.println();
+
+    }
+
+    public void printBoard(int[][] game_board) {
+
+        int ct = 0;
+        for (int[] ints : game_board) { //switch anint and ints if need be
+            for (int anint : ints) {
+                if (ct >= 3){
+                    System.out.println("\n");
+
+                    ct = 0;
+                }
+                if (anint == 1){
+                    System.out.print("X    ");
+                }
+                if (anint == 2){
+                    System.out.print("O    ");
+                }
+                else if (anint == 0){
                     System.out.print("-    ");
                 }
 
@@ -61,15 +90,13 @@ public class slTTTBoard {
         }
     }
 
-    // TODO: Calculate a draw
-    // if board full and func returns 0 -> Draw
     public int gameOver(int[][] game_board) {
         // returns the player num that won or 0 if no win yet
         final int GRID_MAX_SIZE = 2;
         final int player_1_wins = 1;
         final int player_2_wins = 2;
         final int draw = -1;
-        // TODO: make this a separate function
+
         // checks the rows for a win
         for(int row = 0; row <= GRID_MAX_SIZE; row++){
             int player_1_ticks = 0;
@@ -150,8 +177,9 @@ public class slTTTBoard {
      * @param col The column which the player chooses to place a tick in
      * @return The ticktacktoe board after the chosen modifications have been applied to it
      */
-    private int[][] mark_tic(int[][] game_board, int row, int col, int player){
+    private int[][] tick_mark(int[][] game_board, int row, int col, int player){
         final int GRID_MAX_SIZE = 2;
+
         if (row > GRID_MAX_SIZE || col > GRID_MAX_SIZE){
             System.out.println("Invalid row or col number!");
         }
@@ -169,15 +197,150 @@ public class slTTTBoard {
             }
         }
         return game_board;
+
+    }
+
+    public void pos_paths(int[][] game_board, int player_num){
+        // to check what the next move can be, ie "x x -"
+        final int GRID_MAX_SIZE = 2;
+        int[] almost_taken_row = new int[3];
+        int[] almost_taken_col = new int[3];
+
+        for (int row = 0; row <= GRID_MAX_SIZE; row++){
+            int tick_mark = 0;
+            int open_space = 0;
+            int col;
+            for (col = 0; col <= GRID_MAX_SIZE; col++){
+                if (game_board[row][col] == player_num){
+                    tick_mark++;
+                }
+                else if (game_board[row][col] == 0){
+                    open_space = col;
+                }
+            }
+            if (tick_mark > 1){
+                // Now it saves the almost taken spot in each row
+                almost_taken_row[row] = open_space;
+            }
+        }
+
+        for (int col = 0; col <= GRID_MAX_SIZE; col++){
+            int tick_mark = 0;
+            int open_space = 0;
+            int row = 0;
+            for (row = 0; row <= GRID_MAX_SIZE; row++){
+                if (game_board[row][col] == player_num){
+                    tick_mark++;
+                }
+                else if (game_board[row][col] == 0){
+                    open_space = col;
+                }
+            }
+            if (tick_mark > 1){
+                // Now it saves the almost taken spot in each row
+                almost_taken_col[col] = open_space;
+            }
+        }
+
+        // print found spots
+        for (int row = 0; row <= GRID_MAX_SIZE; row++){
+            if (almost_taken_row[row] != 0){
+                System.out.println(row + "," + almost_taken_row[row]);
+            }
+        }
+        for (int col = 0; col <= GRID_MAX_SIZE; col++){
+            if (almost_taken_col[col] != 0){
+                System.out.println(almost_taken_row[col] + "," + col);
+            }
+        }
+    }
+
+    private int[][] held_coordinates(int[][] game_board, int player_num){
+        final int GRID_MAX_SIZE = 2;
+        // Assuming only one mark
+        // Get the coords of it, then find
+        int[][] held_coords = new int[3][3]; // can't decode from regular board which pieces are which players without extra code
+        int held = 1;
+        for (int row = 0; row <= GRID_MAX_SIZE; row++){
+            for (int col = 0; col <= GRID_MAX_SIZE; col++){
+                if (game_board[row][col] == player_num){
+                    held_coords[row][col] = held;
+                }
+            }
+        }
+        return held_coords;
+    }
+
+    private int[][] possible_marks(int[][] game_board, int player_num){
+        //Given what I have held, next I should see what spot is available
+        // next to me to move to.
+        final int GRID_MAX_SIZE = 2;
+        // get coords, iterate through all coords, and then check diag, vert, and horizontal lines for possible open spaces
+        int[][] held_coords = held_coordinates(game_board, player_num);
+        int[][] possible_marks = new int[3][3];
+        //check if possible marks valid are
+        for (int row = 0; row <= GRID_MAX_SIZE; row++){
+            for (int col = 0; col <= GRID_MAX_SIZE; col++){
+                if (held_coords[row][col] == 0){
+                    if(valid_mark(game_board, row, col)){
+                        possible_marks[row][col] = 1;
+                    }
+                }
+            }
+        }
+        System.out.println(Arrays.deepToString(possible_marks)); // these are the possible spots that can be marked
+        return possible_marks;
+    }
+
+    private void future_marks(int[][] game_board, int player_num){
+        final int GRID_MAX_SIZE = 2;
+        int[][] possible_marks = possible_marks(game_board, player_num);
+        for (int row = 0; row <= GRID_MAX_SIZE; row++){
+            for (int col = 0; col <= GRID_MAX_SIZE; col++){
+                if (possible_marks[row][col] == 1){
+                    if (gameOver(game_board) == 0) {
+                        int[][] future_game_board = tick_mark(game_board, row, col, player_num); //add a tick mark to the board
+                        printBoard(future_game_board);
+                        future_marks(future_game_board, player_num);
+                    }
+                }
+            }
+        }
+
     }
 
     /**
      * @param game_bord The current ticktacktoe board
      */
-    private void minimx_algo(int[][] game_bord){
+    public void minimx_algo(int[][] game_bord, int player_num){
+        // Start by analyzing the board, and how close either of you is to a win
+        // Looks at all open slots, and recursively places an X or O
+        // calculating a score along the way, at the end it goes with the lowest score
+        // make it always want more than less, so reward it for taking
+//        player_num = 2; // default num for a machine, can always be switched for a player pov as well
+//        game_bord[0][0] = 2;
+//        game_bord[0][1] = 1;
+//        game_bord[2][0] = 1;
+//        game_bord[2][1] = 2;
+        future_marks(game_bord, player_num);
+//        printBoard();
+//        game_bord[2][0] = 1;
+//        pos_paths(game_bord, player_num);
+//        held_coordinates(game_bord, player_num);
+        // func to see what possible open path any player has
+
     }
 
-    private void machineMove(int[][] game_bord, int player){
+    private void machineMove(int[][] game_bord, int player_num){
+//        boolean first =
+        if (first){
+            randMachineMove(game_bord, player_num);
+        } else {
+            minimx_algo(game_bord, player_num);
+        }
+    }
+
+    private void randMachineMove(int[][] game_bord, int player) {
         int row = 0;
         double randRow = Math.random();
         if (randRow > .6){
@@ -195,10 +358,10 @@ public class slTTTBoard {
             col = 1;
         }
         if (valid_mark(game_board, row, col)){
-            mark_tic(game_bord, row, col, player);
+            tick_mark(game_bord, row, col, player);
         }
         else{
-            machineMove(game_bord, player);
+            randMachineMove(game_bord, player);
         }
     }
 
@@ -207,6 +370,7 @@ public class slTTTBoard {
         // Default user and machine player values
         int user_player_num = 1;
         int machine_player_num = 2;
+//        minimx_algo(game_board, machine_player_num);
         while(true) {
             if (first) {
                 Scanner sc = new Scanner(System.in);
@@ -221,7 +385,7 @@ public class slTTTBoard {
                         int row = sc.nextInt();
                         int col = sc.nextInt();
 
-                        mark_tic(game_board, row, col, user_player_num);
+                        tick_mark(game_board, row, col, user_player_num);
 
                         machineMove(game_board, machine_player_num);
 
@@ -260,7 +424,7 @@ public class slTTTBoard {
                     int col = sc.nextInt();
 
                     if (valid_mark(game_board, row, col)){
-                        mark_tic(game_board, row, col, user_player_num);
+                        tick_mark(game_board, row, col, user_player_num);
                         announceWinner(user_player_num);
                         if(game_board[row][col] == 0){
                             machineMove(game_board, machine_player_num);
@@ -295,6 +459,5 @@ public class slTTTBoard {
                 }
             }
         }
-//        System.out.println("Thank you for playing Tic Tac Toe game!");
     }
 }
