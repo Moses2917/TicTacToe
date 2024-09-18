@@ -39,9 +39,29 @@ public class slTTTBoard {
 
     }
 
-    //TODO: Calculate a draw
+    private void announceWinner(int user_player_num){
+        if (gameOver(game_board) == 1){
+            if (user_player_num == 1) {
+                System.out.println("You win!");
+            }
+            else if (user_player_num == 2) {
+                System.out.println("You lost!");
+            }
+        }
+        else if (gameOver(game_board) == 2){
+            if (user_player_num == 2) {
+                System.out.println("You win!");
+            }
+            else if (user_player_num == 1) {
+                System.out.println("You lost!");
+            }
+        }
+    }
+
+    // TODO: Calculate a draw
+    // if board full and func returns 0 -> Draw
     public int gameOver(int[][] game_board) {
-        // returns a bool based on if the game is over
+        // returns the player num that won or 0 if no win yet
         final int GRID_MAX_SIZE = 2;
         final int player_1_wins = 1;
         final int player_2_wins = 2;
@@ -186,6 +206,8 @@ public class slTTTBoard {
 
                         mark_tic(game_board, row, col, user_player_num);
 
+                        machineMove(game_board, machine_player_num);
+
                     } catch (Exception e) {
                         String response = sc.next();
                         if (response.equalsIgnoreCase("q")){
@@ -217,24 +239,29 @@ public class slTTTBoard {
                 try {
                     int row = sc.nextInt();
                     int col = sc.nextInt();
+
                     if (valid_mark(game_board, row, col)){
                         mark_tic(game_board, row, col, user_player_num);
+                        announceWinner(user_player_num);
+                        machineMove(game_board, machine_player_num);
+                        announceWinner(user_player_num);
+                    }
+                    else{
+                        System.out.println("You have entered an invalid number, Try again.");
                     }
 
-                    if (gameOver(game_board) == 1){
-                        System.out.println("Game over :(\nPlayer 1 wins");
-                    }
-                    else if (gameOver(game_board) == 2){
-                        System.out.println("Game over :(\nPlayer 2 wins");
-                    }
-
-                    machineMove(game_board, machine_player_num);
-
-                    if (gameOver(game_board) == 1){
-                        System.out.println("Game over :(\nPlayer 1 wins");
-                    }
-                    else if (gameOver(game_board) == 2){
-                        System.out.println("Game over :(\nPlayer 2 wins");
+                    if (gameOver(game_board) != 0){
+                        System.out.print("Do you wish to play again (Y|N): ");
+                        String play_again = sc.next();
+                        if (play_again.equalsIgnoreCase("Y")){
+                            // Sets up game to play again
+                            first = true;
+                            game_board = new int[3][3];
+                            printBoard();
+                            play();
+                        } else if (play_again.equalsIgnoreCase("N")){
+                            System.out.println("Have a good day!");
+                        }
                     }
                 } catch (Exception e) {
                     String response = sc.next();
