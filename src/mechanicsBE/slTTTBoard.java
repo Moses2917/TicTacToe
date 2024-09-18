@@ -56,6 +56,9 @@ public class slTTTBoard {
                 System.out.println("You lost!");
             }
         }
+        else if (gameOver(game_board) == -1){
+            System.out.println("Its a draw!");
+        }
     }
 
     // TODO: Calculate a draw
@@ -65,7 +68,8 @@ public class slTTTBoard {
         final int GRID_MAX_SIZE = 2;
         final int player_1_wins = 1;
         final int player_2_wins = 2;
-//        final int
+        final int draw = -1;
+        // TODO: make this a separate function
         // checks the rows for a win
         for(int row = 0; row <= GRID_MAX_SIZE; row++){
             int player_1_ticks = 0;
@@ -116,6 +120,19 @@ public class slTTTBoard {
         }
         if(game_board[0][2] == 2 && game_board[1][1] == 2 && game_board[2][0] == 2){
             return player_2_wins;
+        }
+        // At this point all possible combos have been tried for a win
+        // if no win yet and all pieces are full it's a draw
+        int tick_mark = 0;
+        for (int row = 0; row <= GRID_MAX_SIZE; row++){
+            for (int col = 0; col <= GRID_MAX_SIZE; col++){
+                if (game_board[row][col] != 0){
+                    tick_mark++;
+                }
+            }
+        }
+        if (tick_mark == 9){ // 9 because square count is equal to 9
+            return draw;
         }
         return 0;
     }
@@ -217,8 +234,7 @@ public class slTTTBoard {
                             System.out.println("You have entered an invalid number, Try again.");
                         }
                     }
-                }
-                if (user_input.equalsIgnoreCase("N")) {
+                }else if (user_input.equalsIgnoreCase("N")) {
                     //Call a function to have machine take first move.
                     user_player_num = 2;
                     machine_player_num = 1;
@@ -226,9 +242,12 @@ public class slTTTBoard {
                     machineMove(game_board, 1);
 //                    System.out.println(row + " " + col);
                 }
-//                else{
-//                    System.out.println("You have entered an invalid number, Try again.");
-//                }
+                else {
+                    System.out.println("You have entered an invalid number, Try again.");
+                    first = true;
+                    printBoard();
+                    play();
+                }
 
 
             }
@@ -243,8 +262,10 @@ public class slTTTBoard {
                     if (valid_mark(game_board, row, col)){
                         mark_tic(game_board, row, col, user_player_num);
                         announceWinner(user_player_num);
-                        machineMove(game_board, machine_player_num);
-                        announceWinner(user_player_num);
+                        if(game_board[row][col] == 0){
+                            machineMove(game_board, machine_player_num);
+                            announceWinner(user_player_num);
+                        }
                     }
                     else{
                         System.out.println("You have entered an invalid number, Try again.");
