@@ -200,43 +200,12 @@ public class slTTTBoard {
 
     }
 
-//    public int score(int[][] game_board, int player_num){
-//        // Could possibly subtract from score,
-//        // however lack of addition will take the place of subtraction
-//        int ticks = 0;
-//        if (game_board[0][0] == player_num) {
-//            ticks++;
-//        }
-//        if (game_board[1][1] == player_num) {
-//            ticks++;
-//        }
-//        if (game_board[2][2] == player_num) {
-//            ticks++;
-//        }
-//        if(game_board[0][2] == player_num){
-//            ticks++;
-//        }
-//        if (game_board[2][0] == player_num){
-//            ticks++;
-//        }
-//        if (game_board[1][0] == player_num){
-//            ticks++;
-//        }
-//        if (game_board[0][1] == player_num){
-//            ticks++;
-//        }
-//        if (game_board[2][1] == player_num){
-//            ticks++;
-//        }
-//        if (game_board[1][2] == player_num){
-//            ticks++;
-//        }
-//
-//        return ticks;
-//
-//    }
 
     public int score(int[][] game_board, int player_num) {
+        int opponent_num = 1;
+        if (player_num == 1){
+            opponent_num = 2;
+        }
         // Check rows and columns
         for (int i = 0; i < 3; i++) {
             if (game_board[i][0] == player_num && game_board[i][1] == player_num && game_board[i][2] == player_num) return Integer.MAX_VALUE;
@@ -249,13 +218,13 @@ public class slTTTBoard {
 
         // Check for opponent's win
         for (int i = 0; i < 3; i++) {
-            if (game_board[i][0] == 3 - player_num && game_board[i][1] == 3 - player_num && game_board[i][2] == 3 - player_num) return Integer.MIN_VALUE;
-            if (game_board[0][i] == 3 - player_num && game_board[1][i] == 3 - player_num && game_board[2][i] == 3 - player_num) return Integer.MIN_VALUE;
+            if (game_board[i][0] == opponent_num && game_board[i][1] == opponent_num && game_board[i][2] == opponent_num) return Integer.MIN_VALUE;
+            if (game_board[0][i] == opponent_num && game_board[1][i] == opponent_num && game_board[2][i] == opponent_num) return Integer.MIN_VALUE;
         }
 
         // Check diagonals for opponent's win
-        if (game_board[0][0] == 3 - player_num && game_board[1][1] == 3 - player_num && game_board[2][2] == 3 - player_num) return Integer.MIN_VALUE;
-        if (game_board[0][2] == 3 - player_num && game_board[1][1] == 3 - player_num && game_board[2][0] == 3 - player_num) return Integer.MIN_VALUE;
+        if (game_board[0][0] == opponent_num && game_board[1][1] == opponent_num && game_board[2][2] == opponent_num) return Integer.MIN_VALUE;
+        if (game_board[0][2] == opponent_num && game_board[1][1] == opponent_num && game_board[2][0] == opponent_num) return Integer.MIN_VALUE;
 
         // If no winner yet, score is neutral
         return 0;
@@ -312,36 +281,72 @@ public class slTTTBoard {
     }
 
 
-    private void future_marks(int[][] game_board, int player_num){
+    private int[][] future_marks(int[][] game_board, int player_num) {
         final int GRID_MAX_SIZE = 2;
-        boolean marked = false; //FOR TESTING ONLY, to make it just place one by one each move
-        int[][] possible_marks = possible_marks(game_board, player_num);
-        int score = score(game_board, player_num); //gets the current score of the provided player
-        for (int row = 0; row <= GRID_MAX_SIZE; row++){
-            for (int col = 0; col <= GRID_MAX_SIZE; col++) {
-                if (possible_marks[row][col] == 1) {
-                    if (gameOver(game_board) == 0) {
-                        int[][] future_game_board = tick_mark(game_board, row, col, player_num); //add a tick mark to the board
-                        printBoard(future_game_board);
-                        if (player_num == 1) {
-                            future_marks(future_game_board, 1);
-                        } else {
-                            future_marks(future_game_board, 1);
 
+
+        if (player_num == 1) {
+            int bestScore = Integer.MIN_VALUE;
+            int bestRow = -1;
+            int bestCol = -1;
+
+
+            for (int row = 0; row <= GRID_MAX_SIZE; row++) {
+                for (int col = 0; col <= GRID_MAX_SIZE; col++) {
+                    if (game_board[row][col] == 0) {
+                        game_board[row][col] = player_num;
+                        int score = score(game_board, player_num);
+                        game_board[row][col] = 0;
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestRow = row;
+                            bestCol = col;
                         }
-//                        tick_mark(game_board, row, col, player_num);
-//                        marked = true;
                     }
                 }
             }
+
+            if (bestRow != -1 && bestCol != -1) {
+                game_board[bestRow][bestCol] = player_num;
+
+            }
+        } else {
+            int worstScore = Integer.MAX_VALUE;
+            int bestRow = -1;
+            int bestCol = -1;
+            int PLAYER_2 = 2;
+
+            for (int row = 0; row <= GRID_MAX_SIZE; row++) {
+                for (int col = 0; col <= GRID_MAX_SIZE; col++) {
+                    if (game_board[row][col] == 0) {
+                        game_board[row][col] = PLAYER_2;
+                        int score = score(game_board, player_num);
+                        game_board[row][col] = 0;
+
+                        if (score < worstScore) {
+                            worstScore = score;
+                            bestRow = row;
+                            bestCol = col;
+                        }
+                    }
+                }
+            }
+
+            if (bestRow != -1 && bestCol != -1) {
+                game_board[bestRow][bestCol] = PLAYER_2;
+
+            }
         }
 
+//        printBoard(game_board);
+        return game_board;
     }
 
     /**
      * @param game_bord The current ticktacktoe board
      */
-    public void minimx_algo(int[][] game_bord, int player_num){
+    public int[][] minimx_algo(int[][] game_bord, int player_num){
         // Start by analyzing the board, and how close either of you is to a win
         // Looks at all open slots, and recursively places an X or O
         // calculating a score along the way, at the end it goes with the lowest score
@@ -351,7 +356,7 @@ public class slTTTBoard {
 //        game_bord[0][1] = 1;
 //        game_bord[2][0] = 1;
 //        game_bord[2][1] = 2;
-        future_marks(game_bord, player_num);
+        return future_marks(game_bord, player_num);
 //        printBoard();
 //        game_bord[2][0] = 1;
 //        pos_paths(game_bord, player_num);
@@ -360,9 +365,9 @@ public class slTTTBoard {
 
     }
 
-    private void machineMove(int[][] game_bord, int player_num){
+    private int[][] machineMove(int[][] game_bord, int player_num){
 //        boolean first =
-        minimx_algo(game_bord, player_num);
+        return minimx_algo(game_bord, player_num);
     }
 
     private void randMachineMove(int[][] game_bord, int player) {
@@ -392,99 +397,105 @@ public class slTTTBoard {
 
     public void play(){
         boolean first = true;
+        boolean again = false;
         // Default user and machine player values
         int user_player_num = 1;
         int machine_player_num = 2;
-        minimx_algo(game_board, machine_player_num);
-//        while(true) {
-//            if (first) {
-//                Scanner sc = new Scanner(System.in);
-//                System.out.print("Would you like to go first (Y|N): ");
-//                first = false;
-//                String user_input = sc.next();
-//                if (user_input.equalsIgnoreCase("Y")){
-////                    user_player_num = 1;
-////                    machine_player_num = 2;
-//                    System.out.print("Please enter the coords where you would like to place your mark (Separate by a space):\nPlayer Move: ");
-//                    try {
-//                        int row = sc.nextInt();
-//                        int col = sc.nextInt();
-//
-//                        tick_mark(game_board, row, col, user_player_num);
-//
-//                        machineMove(game_board, machine_player_num);
-//
-//                    } catch (Exception e) {
-//                        String response = sc.next();
-//                        if (response.equalsIgnoreCase("q")){
-//                            break;
-//                        }
-//                        if (e.toString().equals("java.util.InputMismatchException")) {
-//                            System.out.println("You have entered an invalid number, Try again.");
-//                        }
-//                    }
-//                }else if (user_input.equalsIgnoreCase("N")) {
-//                    //Call a function to have machine take first move.
-//                    user_player_num = 2;
-//                    machine_player_num = 1;
-//                    System.out.println("Machine Move: ");
-//                    randMachineMove(game_board, machine_player_num);
-////                    System.out.println(row + " " + col);
-//                }
-//                else {
-//                    System.out.println("You have entered an invalid number, Try again.");
-//                    first = true;
+//        minimx_algo(game_board, machine_player_num);
+        while(true) {
+            if (again) {
+                game_board = new int[3][3];
+                printBoard();
+                again = false;
+            }
+            if (first) {
+                Scanner sc = new Scanner(System.in);
+                System.out.print("Would you like to go first (Y|N): ");
+                first = false;
+                String user_input = sc.next();
+                if (user_input.equalsIgnoreCase("Y")){
+//                    user_player_num = 1;
+//                    machine_player_num = 2;
+                    System.out.print("Please enter the coords where you would like to place your mark (Separate by a space):\nPlayer Move: ");
+                    try {
+                        int row = sc.nextInt();
+                        int col = sc.nextInt();
+
+                        tick_mark(game_board, row, col, user_player_num);
+
+                        game_board = machineMove(game_board, machine_player_num);
+
+                    } catch (Exception e) {
+                        String response = sc.next();
+                        if (response.equalsIgnoreCase("q")){
+                            break;
+                        }
+                        if (e.toString().equals("java.util.InputMismatchException")) {
+                            System.out.println("You have entered an invalid number, Try again.");
+                        }
+                    }
+                }else if (user_input.equalsIgnoreCase("N")) {
+                    //Call a function to have machine take first move.
+                    user_player_num = 2;
+                    machine_player_num = 1;
+                    System.out.println("Machine Move: ");
+                    randMachineMove(game_board, machine_player_num);
+//                    System.out.println(row + " " + col);
+                }
+                else {
+                    System.out.println("You have entered an invalid response, Try again.");
+                    first = true;
 //                    printBoard();
 //                    play();
-//                }
-//
-//                //could also set first = false here
-//                // so that I can use it in machineMove
-//
-//            }
-//            else{
-//                printBoard();
-//                System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space):\nPlayer Move: ");
-//                Scanner sc = new Scanner(System.in);
-//                try {
-//                    int row = sc.nextInt();
-//                    int col = sc.nextInt();
-//
-//                    if (valid_mark(game_board, row, col)){
-//                        tick_mark(game_board, row, col, user_player_num);
-//                        announceWinner(user_player_num);
-//                        if(game_board[row][col] == 0){
-//                            machineMove(game_board, machine_player_num);
-//                            announceWinner(user_player_num);
-//                        }
-//                    }
-//                    else{
-//                        System.out.println("You have entered an invalid number, Try again.");
-//                    }
-//
-//                    if (gameOver(game_board) != 0){
-//                        System.out.print("Do you wish to play again (Y|N): ");
-//                        String play_again = sc.next();
-//                        if (play_again.equalsIgnoreCase("Y")){
-//                            // Sets up game to play again
-//                            first = true;
-//                            game_board = new int[3][3];
-//                            printBoard();
+                }
+
+                //could also set first = false here
+                // so that I can use it in machineMove
+
+            }
+            else{
+                printBoard();
+                System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space):\nPlayer Move: ");
+                Scanner sc = new Scanner(System.in);
+                try {
+                    int row = sc.nextInt();
+                    int col = sc.nextInt();
+
+                    if (valid_mark(game_board, row, col)){
+                        tick_mark(game_board, row, col, user_player_num);
+                        announceWinner(user_player_num);
+                        if(game_board[row][col] == 0){
+                            game_board = machineMove(game_board, machine_player_num);
+                            announceWinner(user_player_num);
+                        }
+                    }
+                    else{
+                        System.out.println("You have entered an invalid number, Try again.");
+                    }
+
+                    if (gameOver(game_board) != 0){
+                        System.out.print("Do you wish to play again (Y|N): ");
+                        String play_again = sc.next();
+                        if (play_again.equalsIgnoreCase("Y")){
+                            // Sets up game to play again
+                            first = true;
+                            again = true;
+
 //                            play();
-//                        } else if (play_again.equalsIgnoreCase("N")){
-//                            System.out.println("Have a good day!");
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    String response = sc.next();
-//                    if (response.equalsIgnoreCase("q")){
-//                        break;
-//                    }
-//                    if (e.toString().equals("java.util.InputMismatchException")) {
-//                        System.out.println("You have entered an invalid number, Try again.");
-//                    }
-//                }
-//            }
-//        }
+                        } else if (play_again.equalsIgnoreCase("N")){
+                            System.out.println("Have a good day!");
+                        }
+                    }
+                } catch (Exception e) {
+                    String response = sc.next();
+                    if (response.equalsIgnoreCase("q")){
+                        break;
+                    }
+                    if (e.toString().equals("java.util.InputMismatchException")) {
+                        System.out.println("You have entered an invalid number, Try again.");
+                    }
+                }
+            }
+        }
     }
 }
