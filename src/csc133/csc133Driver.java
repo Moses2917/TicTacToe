@@ -16,7 +16,7 @@ public class csc133Driver {
         while (GAME_QUIT != game_status) {
             my_fe.print_exit_message(game_status);
             my_board.resetBoard();
-            if (my_fe.promptToStart()) {
+            if (my_fe.promptToStart()) { // Would this not prompt continually. Unless I hardcoded it not too.
                 my_board.playRandom();
                 my_board.printBoard();
             } // if (my_fe.promptToStart())

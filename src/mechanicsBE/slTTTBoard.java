@@ -1,6 +1,5 @@
 package mechanicsBE;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class slTTTBoard {
@@ -200,6 +199,28 @@ public class slTTTBoard {
 
     }
 
+    private boolean block(int[][] game_board, int player_num){
+        int opponent_num = 1;
+        if (player_num == 1){
+            opponent_num = 2;
+        }
+        int row_mark = 0;
+        int col_mark = 0;
+        for (int i = 0; i < 3; i++) {
+            if (game_board[i][0] == opponent_num && game_board[i][1] == opponent_num && game_board[i][2] == opponent_num) row_mark++;
+            if (row_mark == 2){
+                return true;
+            }
+            if (game_board[0][i] == opponent_num && game_board[1][i] == opponent_num && game_board[2][i] == opponent_num) col_mark++;
+            if (col_mark == 2){
+                return true;
+            }
+        }
+        int diagonal_mark = 0;
+        if (game_board[0][0] == opponent_num && game_board[1][1] == opponent_num && game_board[2][2] == opponent_num);
+        if (game_board[0][2] == opponent_num && game_board[1][1] == opponent_num && game_board[2][0] == opponent_num);
+        return false;
+    }
 
     public int score(int[][] game_board, int player_num) {
         int opponent_num = 1;
@@ -230,42 +251,7 @@ public class slTTTBoard {
         return 0;
     }
 
-//    private int[][] held_coordinates(int[][] game_board, int player_num){
-//        final int GRID_MAX_SIZE = 2;
-//        // Assuming only one mark
-//        // Get the coords of it, then find
-//        int[][] held_coords = new int[3][3]; // can't decode from regular board which pieces are which players without extra code
-//        int held = 1;
-//        for (int row = 0; row <= GRID_MAX_SIZE; row++){
-//            for (int col = 0; col <= GRID_MAX_SIZE; col++){
-//                if (game_board[row][col] == player_num){
-//                    held_coords[row][col] = held;
-//                }
-//            }
-//        }
-//        return held_coords;
-//    }
 
-//    private int[][] possible_marks(int[][] game_board, int player_num){
-//        // Given what I have held, next I should see what spot is available
-//        // next to me to move to.
-//        final int GRID_MAX_SIZE = 2;
-//        // get coords, iterate through all coords, and then check diag, vert, and horizontal lines for possible open spaces
-//        int[][] held_coords = held_coordinates(game_board, player_num);
-//        int[][] possible_marks = new int[3][3];
-//        //check if possible marks valid are
-//        for (int row = 0; row <= GRID_MAX_SIZE; row++){
-//            for (int col = 0; col <= GRID_MAX_SIZE; col++){
-//                if (held_coords[row][col] == 0){
-//                    if(valid_mark(game_board, row, col)){
-//                        possible_marks[row][col] = 1;
-//                    }
-//                }
-//            }
-//        }
-//        System.out.println(Arrays.deepToString(possible_marks)); // these are the possible spots that can be marked
-//        return possible_marks;
-//    }
 
     private int[][] possible_marks(int[][] game_board, int player_num) {
         final int GRID_MAX_SIZE = 2;
@@ -370,7 +356,7 @@ public class slTTTBoard {
         return minimx_algo(game_bord, player_num);
     }
 
-    private void randMachineMove(int[][] game_bord, int player) {
+    public void playRandom(int[][] game_bord, int player) {
         int row = 0;
         double randRow = Math.random();
         if (randRow > .6){
@@ -391,7 +377,7 @@ public class slTTTBoard {
             tick_mark(game_bord, row, col, player);
         }
         else{
-            randMachineMove(game_bord, player);
+            playRandom(game_bord, player);
         }
     }
 
@@ -439,7 +425,7 @@ public class slTTTBoard {
                     user_player_num = 2;
                     machine_player_num = 1;
                     System.out.println("Machine Move: ");
-                    randMachineMove(game_board, machine_player_num);
+                    playRandom(game_board, machine_player_num);
 //                    System.out.println(row + " " + col);
                 }
                 else {

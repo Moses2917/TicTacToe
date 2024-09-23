@@ -1,8 +1,9 @@
 package csc133;
 
 public class spot {
-    int[][] game_board;
-    public spot(int[][] game_board) {
-        this.game_board = game_board;
+    int GAME_INCOMPLETE;
+    public spot() {
+        System.out.println();
+        GAME_INCOMPLETE = 0;
     }
 }
