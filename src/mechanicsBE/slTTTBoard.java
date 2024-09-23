@@ -5,13 +5,13 @@ import java.util.Scanner;
 public class slTTTBoard {
     int[][] game_board;
 
-    public slTTTBoard(){
-        game_board = new int[3][3];
-        System.out.println("Hello and welcome to my Tic Tac Toe game!");
-        System.out.println("Rules:\n----------------------\nWe here at MovsesyanGamesStudio© Inc pride ourselves by being a 0 index game studio.");
-        System.out.println("That means when entering where you wish to mark on the board start counting from 0 instead of 1.");
-        System.out.println("You enter 'Q' or 'q' anytime during your turn in the game to end it!");
-    }
+//    public slTTTBoard(){
+//        game_board = new int[3][3];
+//        System.out.println("Hello and welcome to my Tic Tac Toe game!");
+//        System.out.println("Rules:\n----------------------\nWe here at MovsesyanGamesStudio© Inc pride ourselves by being a 0 index game studio.");
+//        System.out.println("That means when entering where you wish to mark on the board start counting from 0 instead of 1.");
+//        System.out.println("You enter 'Q' or 'q' anytime during your turn in the game to end it!");
+//    }
 
     public void printBoard() {
 
@@ -394,94 +394,98 @@ public class slTTTBoard {
                 printBoard();
                 again = false;
             }
-            if (first) {
-                Scanner sc = new Scanner(System.in);
-                System.out.print("Would you like to go first (Y|N): ");
-                first = false;
-                String user_input = sc.next();
-                if (user_input.equalsIgnoreCase("Y")){
-//                    user_player_num = 1;
-//                    machine_player_num = 2;
-                    System.out.print("Please enter the coords where you would like to place your mark (Separate by a space):\nPlayer Move: ");
-                    try {
-                        int row = sc.nextInt();
-                        int col = sc.nextInt();
+//            if (first) {
+//                Scanner sc = new Scanner(System.in);
+//                System.out.print("Would you like to go first (Y|N): ");
+//                first = false;
+//                String user_input = sc.next();
+//                if (user_input.equalsIgnoreCase("Y")){
+////                    user_player_num = 1;
+////                    machine_player_num = 2;
+//                    System.out.print("Please enter the coords where you would like to place your mark (Separate by a space):\nPlayer Move: ");
+//                    try {
+//                        int row = sc.nextInt();
+//                        int col = sc.nextInt();
+//
+//                        tick_mark(game_board, row, col, user_player_num);
+//
+//                        game_board = machineMove(game_board, machine_player_num);
+//
+//                    } catch (Exception e) {
+//                        String response = sc.next();
+//                        if (response.equalsIgnoreCase("q")){
+//                            break;
+//                        }
+//                        if (e.toString().equals("java.util.InputMismatchException")) {
+//                            System.out.println("You have entered an invalid number, Try again.");
+//                        }
+//                    }
+//                }else if (user_input.equalsIgnoreCase("N")) {
+//                    //Call a function to have machine take first move.
+//                    user_player_num = 2;
+//                    machine_player_num = 1;
+//                    System.out.println("Machine Move: ");
+//                    playRandom(game_board, machine_player_num);
+////                    System.out.println(row + " " + col);
+//                }
+//                else {
+//                    System.out.println("You have entered an invalid response, Try again.");
+//                    first = true;
+////                    printBoard();
+////                    play();
+//                }
+//
+//                //could also set first = false here
+//                // so that I can use it in machineMove
+//
+//            }
+//            else{
+            printBoard();
+            System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space):\nPlayer Move: ");
+            Scanner sc = new Scanner(System.in);
+            try {
+                int row = sc.nextInt();
+                int col = sc.nextInt();
 
-                        tick_mark(game_board, row, col, user_player_num);
-
+                if (valid_mark(game_board, row, col)){
+                    tick_mark(game_board, row, col, user_player_num);
+                    announceWinner(user_player_num);
+                    if(game_board[row][col] == 0){
                         game_board = machineMove(game_board, machine_player_num);
-
-                    } catch (Exception e) {
-                        String response = sc.next();
-                        if (response.equalsIgnoreCase("q")){
-                            break;
-                        }
-                        if (e.toString().equals("java.util.InputMismatchException")) {
-                            System.out.println("You have entered an invalid number, Try again.");
-                        }
-                    }
-                }else if (user_input.equalsIgnoreCase("N")) {
-                    //Call a function to have machine take first move.
-                    user_player_num = 2;
-                    machine_player_num = 1;
-                    System.out.println("Machine Move: ");
-                    playRandom(game_board, machine_player_num);
-//                    System.out.println(row + " " + col);
-                }
-                else {
-                    System.out.println("You have entered an invalid response, Try again.");
-                    first = true;
-//                    printBoard();
-//                    play();
-                }
-
-                //could also set first = false here
-                // so that I can use it in machineMove
-
-            }
-            else{
-                printBoard();
-                System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space):\nPlayer Move: ");
-                Scanner sc = new Scanner(System.in);
-                try {
-                    int row = sc.nextInt();
-                    int col = sc.nextInt();
-
-                    if (valid_mark(game_board, row, col)){
-                        tick_mark(game_board, row, col, user_player_num);
                         announceWinner(user_player_num);
-                        if(game_board[row][col] == 0){
-                            game_board = machineMove(game_board, machine_player_num);
-                            announceWinner(user_player_num);
-                        }
                     }
-                    else{
-                        System.out.println("You have entered an invalid number, Try again.");
-                    }
+                }
+                else{
+                    System.out.println("You have entered an invalid number, Try again.");
+                }
 
-                    if (gameOver(game_board) != 0){
-                        System.out.print("Do you wish to play again (Y|N): ");
-                        String play_again = sc.next();
-                        if (play_again.equalsIgnoreCase("Y")){
-                            // Sets up game to play again
-                            first = true;
-                            again = true;
+                if (gameOver(game_board) != 0){
+                    System.out.print("Do you wish to play again (Y|N): ");
+                    String play_again = sc.next();
+                    if (play_again.equalsIgnoreCase("Y")){
+                        // Sets up game to play again
+                        first = true;
+                        again = true;
 
 //                            play();
-                        } else if (play_again.equalsIgnoreCase("N")){
-                            System.out.println("Have a good day!");
-                        }
-                    }
-                } catch (Exception e) {
-                    String response = sc.next();
-                    if (response.equalsIgnoreCase("q")){
-                        break;
-                    }
-                    if (e.toString().equals("java.util.InputMismatchException")) {
-                        System.out.println("You have entered an invalid number, Try again.");
+                    } else if (play_again.equalsIgnoreCase("N")){
+                        System.out.println("Have a good day!");
                     }
                 }
+            } catch (Exception e) {
+                String response = sc.next();
+                if (response.equalsIgnoreCase("q")){
+                    break;
+                }
+                if (e.toString().equals("java.util.InputMismatchException")) {
+                    System.out.println("You have entered an invalid number, Try again.");
+                }
             }
+//            }
         }
+    }
+
+    public void resetBoard() {
+        game_board = new int[3][3];
     }
 }
