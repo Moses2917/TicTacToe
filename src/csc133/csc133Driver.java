@@ -20,7 +20,7 @@ public class csc133Driver {
                 my_board.playRandom();
                 my_board.printBoard();
             } // if (my_fe.promptToStart())
-            game_status = my_board.play();
+            game_status = my_board.play(); // Return the game status/update the game status, Is the actual game play loop
         } // while (...)
         my_fe.promptToStart();
     } // public static void startGame()
