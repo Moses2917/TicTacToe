@@ -20,21 +20,21 @@ public class gameFE {
     }
 
     public void print_exit_message(int gameStatus) {
-        switch (gameStatus) {
-            case 1:
-                System.out.println("Sorry to see you go; come again!");
-                break;
-            case 2:
-                System.out.println("Congratulations! you have won!");
-                break;
-            case 3:
-                System.out.println("Sorry, you did not win; try again!");
-                break;
-            case 4:
-                System.out.println("Hey, you almost beat me, let's try again!");
-                break;
-            default: // case: game incomplete
-                break;
-        }
+//        switch (gameStatus) {
+//            case 1:
+//                System.out.println("Sorry to see you go; come again!");
+//                break;
+//            case 2:
+//                System.out.println("Congratulations! you have won!");
+//                break;
+//            case 3:
+//                System.out.println("Sorry, you did not win; try again!");
+//                break;
+//            case 4:
+//                System.out.println("Hey, you almost beat me, let's try again!");
+//                break;
+//            default: // case: game incomplete
+//                break;
+//        }
     }
 }

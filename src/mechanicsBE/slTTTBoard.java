@@ -1,11 +1,14 @@
 package mechanicsBE;
 import static csc133.spot.GAME_INCOMPLETE;
 import static csc133.spot.GAME_QUIT;
+import static csc133.spot.PLAYER_WIN;
+import static csc133.spot.MACHINE_WIN;
+import static csc133.spot.GAME_DRAW;
 import java.util.Scanner;
 
 public class slTTTBoard {
     int[][] game_board = new int[3][3];
-
+    final int GRID_MAX_SIZE = 2; //Adjusted for 0 index board
 //    public slTTTBoard(){
 //        game_board = new int[3][3];
 //        System.out.println("Hello and welcome to my Tic Tac Toe game!");
@@ -68,7 +71,7 @@ public class slTTTBoard {
     }
 
     private void announceWinner(int user_player_num){
-        if (gameOver(game_board) == 1){
+        if (gameOver() == 1){
             if (user_player_num == 1) {
                 System.out.println("Congratulations! you have won!");
             }
@@ -76,7 +79,7 @@ public class slTTTBoard {
                 System.out.println("Sorry, you did not win; try again!");
             }
         }
-        else if (gameOver(game_board) == 2){
+        else if (gameOver() == 2){
             if (user_player_num == 2) {
                 System.out.println("Congratulations! you have won!");
             }
@@ -84,18 +87,87 @@ public class slTTTBoard {
                 System.out.println("Sorry, you did not win; try again!");
             }
         }
-        else if (gameOver(game_board) == -1){
+        else if (gameOver() == -1){
 
             System.out.println("Hey, you almost beat me, let's try again!");
         }
     }
 
-    public int gameOver(int[][] game_board) {
+    private void print_exit_message(int game_status){
+        gameOver();
+    }
+
+    public int[] findNextMove(int[][] game_board, int player) {
+        // Check horizontally
+        for (int row = 0; row < game_board.length; row++) {
+            int col = hasTwoConsecutive(game_board[row], player);
+            if (col != -1) return new int[]{row, col};
+        }
+
+        // Check vertically
+        for (int col = 0; col < game_board[0].length; col++) {
+            int[] column = new int[game_board.length];
+            for (int row = 0; row < game_board.length; row++) {
+                column[row] = game_board[row][col];
+            }
+            int row = hasTwoConsecutive(column, player);
+            if (row != -1) return new int[]{row, col};
+        }
+
+        // Check primary diagonal
+        int diagIndex = hasTwoConsecutive(diagonalPrimary(game_board), player);
+        if (diagIndex != -1) return new int[]{diagIndex, diagIndex};
+
+        // Check secondary diagonal
+        diagIndex = hasTwoConsecutive(diagonalSecondary(game_board), player);
+        if (diagIndex != -1) return new int[]{diagIndex, game_board.length - 1 - diagIndex};
+
+        // No immediate winning move found
+        return null;
+    }
+
+    // Checks for two consecutive marks and an empty spot (0) in the array
+    private int hasTwoConsecutive(int[] row, int player) {
+        int count = 0;
+        int emptyIndex = -1;
+
+        for (int i = 0; i < row.length; i++) {
+            if (row[i] == player) {
+                count++;
+            } else if (row[i] == 0) {
+                emptyIndex = i; // Possible spot for the next move
+            }
+        }
+
+        // Return the empty index if exactly two consecutive marks and an empty spot
+        return (count == 2 && emptyIndex != -1) ? emptyIndex : -1;
+    }
+
+    // Extracts the primary diagonal from the game board
+    private int[] diagonalPrimary(int[][] game_board) {
+        int[] primaryDiagonal = new int[game_board.length];
+        for (int i = 0; i < game_board.length; i++) {
+            primaryDiagonal[i] = game_board[i][i];
+        }
+        return primaryDiagonal;
+    }
+
+    // Extracts the secondary diagonal from the game board
+    private int[] diagonalSecondary(int[][] game_board) {
+        int[] secondaryDiagonal = new int[game_board.length];
+        for (int i = 0; i < game_board.length; i++) {
+            secondaryDiagonal[i] = game_board[i][game_board.length - 1 - i];
+        }
+        return secondaryDiagonal;
+    }
+
+    
+
+    public int gameOver() {
         // returns the player num that won or 0 if no win yet
-        final int GRID_MAX_SIZE = 2;
-        final int player_1_wins = 1;
-        final int player_2_wins = 2;
-        final int draw = -1;
+//        final int GRID_MAX_SIZE = 2;
+        final int player_1_wins = PLAYER_WIN;
+        final int player_2_wins = MACHINE_WIN;
 
         // checks the rows for a win
         for(int row = 0; row <= GRID_MAX_SIZE; row++){
@@ -159,9 +231,9 @@ public class slTTTBoard {
             }
         }
         if (tick_mark == 9){ // 9 because square count is equal to 9
-            return draw;
+            return GAME_DRAW;
         }
-        return 0;
+        return GAME_INCOMPLETE;
     }
 
     private boolean valid_mark(int row, int col){
@@ -176,7 +248,7 @@ public class slTTTBoard {
      * @param col The column which the player chooses to place a tick in
      */
     private void tick_mark( int row, int col, int player){
-        final int GRID_MAX_SIZE = 2;
+//        final int GRID_MAX_SIZE = 2;
 
         if (row > GRID_MAX_SIZE || col > GRID_MAX_SIZE){
             System.out.println("Invalid row or col number!");
@@ -197,28 +269,9 @@ public class slTTTBoard {
 
     }
 
-    private boolean block(int[][] game_board, int player_num){
-        int opponent_num = 1;
-        if (player_num == 1){
-            opponent_num = 2;
-        }
-        int row_mark = 0;
-        int col_mark = 0;
-        for (int i = 0; i < 3; i++) {
-            if (game_board[i][0] == opponent_num && game_board[i][1] == opponent_num && game_board[i][2] == opponent_num) row_mark++;
-            if (row_mark == 2){
-                return true;
-            }
-            if (game_board[0][i] == opponent_num && game_board[1][i] == opponent_num && game_board[2][i] == opponent_num) col_mark++;
-            if (col_mark == 2){
-                return true;
-            }
-        }
-        int diagonal_mark = 0;
-        if (game_board[0][0] == opponent_num && game_board[1][1] == opponent_num && game_board[2][2] == opponent_num);
-        if (game_board[0][2] == opponent_num && game_board[1][1] == opponent_num && game_board[2][0] == opponent_num);
-        return false;
-    }
+//    private boolean block(int player_num){
+//
+//    }
 
     public int score(int[][] game_board, int player_num) {
         int opponent_num = 1;
@@ -252,7 +305,7 @@ public class slTTTBoard {
 
 
     private int[][] possible_marks(int[][] game_board, int player_num) {
-        final int GRID_MAX_SIZE = 2;
+//        final int GRID_MAX_SIZE = 2;
         int[][] possible_marks = new int[3][3];
         for (int row = 0; row <= GRID_MAX_SIZE; row++) {
             for (int col = 0; col <= GRID_MAX_SIZE; col++) {
@@ -266,7 +319,7 @@ public class slTTTBoard {
 
 
     private int[][] future_marks(int[][] game_board, int player_num) {
-        final int GRID_MAX_SIZE = 2;
+//        final int GRID_MAX_SIZE = 2;
 
 
         if (player_num == 1) {
@@ -349,9 +402,25 @@ public class slTTTBoard {
 
     }
 
-    private int[][] machineMove(int[][] game_bord, int player_num){
-//        boolean first =
-        return minimx_algo(game_bord, player_num);
+    private void machineMove( int player_num){
+        // First: Check if any almost wins exist then block those
+        // Second: If no blocks available and center taken, find open corners and take one
+        // 2.5: Min-Max based on position of player
+        //
+        player_num = 1;//player_num != machine num
+//        int[] move = findNextMove(game_board, player_num);
+//        System.out.println("Near Win:"+ move[0]+" "+ move[1]);
+        int[] nextMove = findNextMove(game_board, 1); // Find the next move for player 1
+
+        if (nextMove != null) {
+            System.out.println("Next move: (" + nextMove[0] + ", " + nextMove[1] + ")");
+            System.out.println("Placing a mark to prevent loss....");
+            tick_mark(nextMove[0], nextMove[1], 2);
+        } else {
+            System.out.println("No immediate winning move found.");
+            playRandom();
+
+        }
     }
 
     public void playRandom() {
@@ -373,7 +442,7 @@ public class slTTTBoard {
         else if (randCol > .3){
             col = 1;
         }
-        int[][] game_bord = game_board;
+//        int[][] game_bord = game_board;
 
         if (valid_mark(row, col)){
             tick_mark(row, col, player);
@@ -399,11 +468,11 @@ public class slTTTBoard {
                 int col = sc.nextInt();
 
                 if (valid_mark(row, col)){
-                    tick_mark(row, col, user_player_num);
+                    tick_mark(row, col, user_player_num); // player move
                     announceWinner(user_player_num);
-                    if(game_board[row][col] == 0){
-//                        game_board = machineMove(game_board, machine_player_num);
-                        playRandom();
+                    if(gameOver() == GAME_INCOMPLETE){
+                        machineMove(machine_player_num); // machine move
+//                        playRandom();
                         announceWinner(user_player_num);
                     }
                 }
@@ -411,7 +480,7 @@ public class slTTTBoard {
                     System.out.println("You have entered an invalid number, Try again.");
                 }
 
-                if (gameOver(game_board) != 0){
+                if (gameOver() != GAME_INCOMPLETE){
                     System.out.print("Do you wish to play again (Y|N): ");
                     String play_again = sc.next();
                     if (play_again.equalsIgnoreCase("Y")){
