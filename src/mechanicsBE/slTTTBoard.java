@@ -161,7 +161,27 @@ public class slTTTBoard {
         return secondaryDiagonal;
     }
 
-    
+    // Finds the first available corner
+    public int[] findOpenCorner(int[][] game_board, int player) {
+        // First check and see if center is taken
+        if (valid_mark(1,1)){
+            return new int[]{1,1};
+        }
+        //Now checking all four corners
+        if(valid_mark(0,0)){
+            return new int[]{0,0};
+        }
+        if(valid_mark(2,0)){
+            return new int[]{2,0};
+        }
+        if(valid_mark(0,2)){
+            return new int[]{0,2};
+        }
+        if(valid_mark(2,2)){
+            return new int[]{2,2};
+        }
+        return null;
+    }
 
     public int gameOver() {
         // returns the player num that won or 0 if no win yet
@@ -411,14 +431,21 @@ public class slTTTBoard {
 //        int[] move = findNextMove(game_board, player_num);
 //        System.out.println("Near Win:"+ move[0]+" "+ move[1]);
         int[] nextMove = findNextMove(game_board, 1); // Find the next move for player 1
-
-        if (nextMove != null) {
+        int[] machineNextMove = findNextMove(game_board, 2);
+        if (machineNextMove != null) {
+            tick_mark(machineNextMove[0], machineNextMove[1],2);
+        }
+        else if (nextMove != null) {
             System.out.println("Next move: (" + nextMove[0] + ", " + nextMove[1] + ")");
             System.out.println("Placing a mark to prevent loss....");
             tick_mark(nextMove[0], nextMove[1], 2);
         } else {
             System.out.println("No immediate winning move found.");
-            playRandom();
+//            playRandom();
+            int[] openCorner = findOpenCorner(game_board, 2);
+            System.out.println("Going back to playing corners");
+//            System.out.println("Next move: (" + corner[0] + ", " + corner[1] + ")");
+            tick_mark(openCorner[0], openCorner[1], 2);
 
         }
     }
@@ -472,7 +499,6 @@ public class slTTTBoard {
                     announceWinner(user_player_num);
                     if(gameOver() == GAME_INCOMPLETE){
                         machineMove(machine_player_num); // machine move
-//                        playRandom();
                         announceWinner(user_player_num);
                     }
                 }
