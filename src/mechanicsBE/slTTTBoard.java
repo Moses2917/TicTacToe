@@ -381,7 +381,7 @@ public class slTTTBoard {
         }
     }
 
-    public void play(){
+    public int play(){
         boolean first = true;
         boolean again = false;
         // Default user and machine player values
@@ -483,6 +483,7 @@ public class slTTTBoard {
             }
 //            }
         }
+        return 0; //game_status;
     }
 
     public void resetBoard() {
