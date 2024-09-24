@@ -9,6 +9,10 @@ import java.util.Scanner;
 public class slTTTBoard {
     int[][] game_board = new int[3][3];
     final int GRID_MAX_SIZE = 2; //Adjusted for 0 index board
+    static int user_player_num = 1;
+    static int machine_player_num = 2;
+    static boolean machine_goes_first = false;
+    static boolean machine_first_and_first_round = false;
 //    public slTTTBoard(){
 //        game_board = new int[3][3];
 //        System.out.println("Hello and welcome to my Tic Tac Toe game!");
@@ -18,6 +22,7 @@ public class slTTTBoard {
 //    }
 
     public void printBoard() {
+        // Possibly add a player var, then based on that if player = 2, print 2 as X not O, because machine is 1
         int ct = 0;
         for (int[] ints : game_board) { //switch anint and ints if need be
             for (int anint : ints) {
@@ -26,13 +31,21 @@ public class slTTTBoard {
 
                     ct = 0;
                 }
-                if (anint == 1){
+                if (machine_goes_first){
+                    if (anint == 1){
+                        System.out.print("O    ");
+                    }
+                } else if (anint == 1){
                     System.out.print("X    ");
                 }
-                if (anint == 2){
+                if (machine_goes_first){
+                    if (anint == 2){
+                        System.out.print("X    ");
+                    }
+                } else if (anint == 2){
                     System.out.print("O    ");
                 }
-                else if (anint == 0){
+                if (anint == 0){
                     System.out.print("-    ");
                 }
 
@@ -42,7 +55,7 @@ public class slTTTBoard {
         System.out.println();
 
     }
-    
+
     private void announceWinner(int user_player_num){
         if (gameOver() == 1){
             if (user_player_num == 1) {
@@ -294,9 +307,27 @@ public class slTTTBoard {
         }
     }
 
+    private boolean isEmpty(){
+        for (int row = 0; row <= GRID_MAX_SIZE; row++){
+            for (int col = 0; col <= GRID_MAX_SIZE; col++){
+                if (game_board[row][col] != 0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void playRandom() {
 //        int[][] game_bord int player
-        int player = 2;
+        if (isEmpty()){
+            // if empty then first time, and since machine is being called to move for the first time, then that means that machine is player 1
+//            user_player_num = 2;
+//            machine_player_num = 1;
+            machine_goes_first = true;
+            machine_first_and_first_round = true;
+        }
+
         int row = 0;
         double randRow = Math.random();
         if (randRow > .6){
@@ -316,7 +347,7 @@ public class slTTTBoard {
 //        int[][] game_bord = game_board;
 
         if (valid_mark(row, col)){
-            tick_mark(row, col, player);
+            tick_mark(row, col, machine_player_num);
         }
         else{
             playRandom();
@@ -327,11 +358,15 @@ public class slTTTBoard {
         boolean first = true;
         boolean again = false;
         // Default user and machine player values
-        int user_player_num = 1;
-        int machine_player_num = 2;
+
 //        minimx_algo(game_board, machine_player_num);
         while(true) {
-            printBoard();
+            if (!machine_first_and_first_round){
+                printBoard();
+            } else{
+                machine_first_and_first_round = false;
+            }
+
             System.out.print("Please enter the coords where you would like to place your mark (Seperate by a space):\nPlayer Move: ");
             Scanner sc = new Scanner(System.in);
             try {
@@ -368,7 +403,9 @@ public class slTTTBoard {
             } catch (Exception e) {
                 String response = sc.next();
                 if (response.equalsIgnoreCase("q")){
-                    break;
+                    System.out.println("Sorry to see you go; come again!");
+                    return GAME_QUIT;
+//                    break;
                 }
                 if (e.toString().equals("java.util.InputMismatchException")) {
                     System.out.println("You have entered an invalid number, Try again.");
@@ -376,7 +413,7 @@ public class slTTTBoard {
             }
 //            }
         }
-        return GAME_INCOMPLETE; //game_status;
+//        return GAME_INCOMPLETE; //game_status;
     }
 
     public void resetBoard() {
